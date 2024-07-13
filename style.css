@@ -1,68 +1,42 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
-    margin: 0;
-    padding: 20px;
-    color: #333;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    flex-direction: column;
-}
+document.getElementById('transaction-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    
+    const type = document.getElementById('type').value;
+    const category = document.getElementById('category').value;
+    const amount = document.getElementById('amount').value;
+    const description = document.getElementById('description').value;
+    
+    const data = { type, category, amount, description };
+    
+    fetch('/add_transaction', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert('Transaction added successfully');
+        document.getElementById('transaction-form').reset();
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+});
 
-h1 {
-    text-align: center;
-    color: #2c3e50;
-}
-
-.content {
-    width: 100%;
-    max-width: 500px;
-}
-
-.container {
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    margin: 20px 0;
-    box-sizing: border-box;
-}
-
-h2 {
-    color: #2c3e50;
-    margin-bottom: 20px;
-}
-
-form {
-    display: flex;
-    flex-direction: column;
-}
-
-label {
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-input, select {
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    box-sizing: border-box;
-    width: 100%;
-}
-
-button {
-    padding: 10px 20px;
-    margin: 10px 0;
-    border: none;
-    border-radius: 30px;
-    background-color: #3498db;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-    box-shadow: 0​ 2px 4px
-rgba(0,0,0,0,1);
-}
+document.getElementById('generate-report').addEventListener('click', function() {
+    fetch('/report')
+    .then(response => response.json())
+    .then(data => {
+        const reportDiv = document.getElementById('report');
+        reportDiv.classList.add('active');
+        
+        const reportContent = document.getElementById('report-content');
+        reportContent.innerHTML = `
+            <p>Total Income: $${data.total_income}</p>
+            <p>Total Expense: $${data.total_expense}</p>
+            <p>Balance: $${data.balance}</p>
+        `;
+    });
+});
